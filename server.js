@@ -8,8 +8,9 @@ app.use(express.static("public"));
 
 // ================= DB CONNECTION =================
 
-mongoose.connect("mongodb://localhost:27017/")
+mongoose.connect("mongodb+srv://kalyankumarsampath_db_users:PibyZPIPd3Kl8Ur1@cluster0.uvzrc5s.mongodb.net/?appName=Cluster0")
 //mongodb+srv://kalyankumarsampath_db_users:PibyZPIPd3Kl8Ur1@cluster0.uvzrc5s.mongodb.net/?appName=Cluster0")
+//mongodb://localhost:27017
   .then(() => console.log("MongoDB Connected ✅"))
   .catch((err) => console.log(err));
 
