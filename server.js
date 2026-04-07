@@ -36,7 +36,7 @@ const User = mongoose.model("User", userSchema);
 
 
 const allusers =(req, res) => {
-  res.send("Welcome to MongoDB API 🚀");
+  res.send("Welcome to MoongoDB API 🚀");
 }
 
 // ================= HOME =================
