@@ -1,28 +1,118 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>User Management</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Double+Ink:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kalyan's User Management</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+</head>
 <body>
 
-  <div class="title">
-    <h1> 🚀<br> Kalyan's User<br> Management</h1>
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">KM</div>
+      <div>
+        <div class="header-title">User Management</div>
+        <div class="header-sub">Kalyan's Dashboard</div>
+      </div>
     </div>
-<div class="container">
-    <form id="userForm">
-      <label>Enter uid</label>
-      <input type="text" class="textarea" id="uid" placeholder="Enter uid" required />
-      <input type="text" class="textarea" id="name" placeholder="Enter Name" required />
-      <input type="number"class="textarea" id="age" placeholder="Enter Age" required />
-      <button type="submit" class="button1">Add User</button>
-    </form>
-</div>
-<div class="list">
-    <h2>Users List</h2>
-    <ul id="userList"></ul>
+    <div class="header-right">
+      <div class="user-count-badge">
+        <span id="totalCount">0</span> Users
+      </div>
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <span id="themeIcon">☀️</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Left Panel: Form -->
+    <section class="panel form-panel">
+      <div class="panel-header">
+        <h2>Add New User</h2>
+        <p>Fill in the details below</p>
+      </div>
+
+      <form id="userForm" autocomplete="off">
+        <div class="field">
+          <label for="uid">User ID</label>
+          <div class="input-wrap">
+            <span class="input-icon">#</span>
+            <input type="number" id="uid" placeholder="e.g. 101" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="name">Full Name</label>
+          <div class="input-wrap">
+            <span class="input-icon">@</span>
+            <input type="text" id="name" placeholder="e.g. Kalyan Kumar" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="age">Age</label>
+          <div class="input-wrap">
+            <span class="input-icon">~</span>
+            <input type="number" id="age" placeholder="e.g. 21" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-add" id="submitBtn">
+          <span id="btnText">+ Add User</span>
+        </button>
+        <button type="button" class="btn-cancel hidden" id="cancelBtn">✕ Cancel Edit</button>
+      </form>
+    </section>
+
+    <!-- Right Panel: User List -->
+    <section class="panel list-panel">
+      <div class="panel-header">
+        <h2>All Users</h2>
+        <div class="search-wrap">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="Search by name or ID..." />
+        </div>
+      </div>
+
+      <div class="sort-bar">
+        <span>Sort by:</span>
+        <button class="sort-btn active" data-sort="default">Default</button>
+        <button class="sort-btn" data-sort="name">Name</button>
+        <button class="sort-btn" data-sort="age">Age</button>
+        <button class="sort-btn" data-sort="uid">ID</button>
+      </div>
+
+      <div id="userList" class="user-list">
+        <div class="empty-state">
+          <div class="empty-icon">👤</div>
+          <p>No users yet. Add one!</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-icon">🗑️</div>
+      <h3>Delete User?</h3>
+      <p>This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel-modal" id="cancelDelete">Cancel</button>
+        <button class="btn-confirm-delete" id="confirmDelete">Yes, Delete</button>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
