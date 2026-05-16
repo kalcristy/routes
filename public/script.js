@@ -5,8 +5,8 @@ const userList = document.getElementById("userList");
 
 // Name validation on input
 document.getElementById("name").addEventListener("input", function () {
-  if (this.value.trim().toLowerCase() === "akash") {
-    alert("Tulasi is waiting for you");
+  if (this.value.trim().toLowerCase() === "vimal") {
+    alert("j bhai is waiting for you");
     this.value = "";
   }
 });
