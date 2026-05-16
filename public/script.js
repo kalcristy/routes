@@ -13,26 +13,17 @@ const searchInput  = document.getElementById("searchInput");
 const totalCount   = document.getElementById("totalCount");
 const submitBtn    = document.getElementById("submitBtn");
 const btnText      = document.getElementById("btnText");
+const btnIcon      = document.getElementById("btnIcon");
 const cancelBtn    = document.getElementById("cancelBtn");
-const themeToggle  = document.getElementById("themeToggle");
-const themeIcon    = document.getElementById("themeIcon");
 const modalOverlay = document.getElementById("modalOverlay");
 const confirmDelete= document.getElementById("confirmDelete");
 const cancelDelete = document.getElementById("cancelDelete");
 const toast        = document.getElementById("toast");
 
-// ── Theme ──
-const savedTheme = localStorage.getItem("spidey-theme") || "dark";
-document.documentElement.setAttribute("data-theme", savedTheme);
-themeIcon.textContent = savedTheme === "dark" ? "☀️" : "🌙";
-
-themeToggle.addEventListener("click", () => {
-  const cur  = document.documentElement.getAttribute("data-theme");
-  const next = cur === "dark" ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", next);
-  localStorage.setItem("spidey-theme", next);
-  themeIcon.textContent = next === "dark" ? "☀️" : "🌙";
-});
+// ── Helper: get current theme content ──
+function tc() {
+  return window.__themeContent || {};
+}
 
 // ── Web Canvas ──
 const canvas = document.getElementById("webCanvas");
@@ -43,40 +34,43 @@ function resizeCanvas() {
   canvas.height = window.innerHeight;
 }
 resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener("resize", () => { resizeCanvas(); drawWeb(); });
 
 function drawWeb() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-  const lineColor = isDark ? "rgba(227,28,28,0.35)" : "rgba(180,0,0,0.2)";
+  // Batman: gold web / Spider-Man: red web
+  const lineColor = isDark
+    ? "rgba(245,197,24,0.18)"
+    : "rgba(227,28,28,0.30)";
   ctx.strokeStyle = lineColor;
   ctx.lineWidth = 0.7;
 
-  // Draw multiple web origins
-  const origins = [
-    { x: 0, y: 0 },
-    { x: canvas.width, y: 0 },
-    { x: canvas.width / 2, y: -50 },
-  ];
+  const origins = isDark
+    ? [
+        { x: canvas.width / 2, y: 0 },
+        { x: 0, y: canvas.height },
+        { x: canvas.width, y: canvas.height },
+      ]
+    : [
+        { x: 0, y: 0 },
+        { x: canvas.width, y: 0 },
+        { x: canvas.width / 2, y: -50 },
+      ];
 
   origins.forEach(origin => {
-    const spokes = 16;
+    const spokes = isDark ? 20 : 16;
     const maxR   = Math.max(canvas.width, canvas.height) * 1.2;
-    const rings  = 10;
+    const rings  = isDark ? 12 : 10;
 
-    // Spokes
     for (let i = 0; i < spokes; i++) {
       const angle = (i / spokes) * Math.PI * 2;
       ctx.beginPath();
       ctx.moveTo(origin.x, origin.y);
-      ctx.lineTo(
-        origin.x + Math.cos(angle) * maxR,
-        origin.y + Math.sin(angle) * maxR
-      );
+      ctx.lineTo(origin.x + Math.cos(angle) * maxR, origin.y + Math.sin(angle) * maxR);
       ctx.stroke();
     }
 
-    // Concentric rings
     for (let r = 1; r <= rings; r++) {
       const radius = (maxR / rings) * r;
       ctx.beginPath();
@@ -94,25 +88,6 @@ function drawWeb() {
 }
 
 drawWeb();
-window.addEventListener("resize", drawWeb);
-document.getElementById("themeToggle").addEventListener("click", () => setTimeout(drawWeb, 50));
-
-// ── Floating Sparks ──
-function createSparks() {
-  const container = document.getElementById("particles");
-  for (let i = 0; i < 20; i++) {
-    const spark = document.createElement("div");
-    spark.className = "spark";
-    spark.style.left     = Math.random() * 100 + "vw";
-    spark.style.top      = Math.random() * 100 + "vh";
-    spark.style.animationDuration  = (4 + Math.random() * 8) + "s";
-    spark.style.animationDelay     = (Math.random() * 8) + "s";
-    spark.style.width    = (2 + Math.random() * 3) + "px";
-    spark.style.height   = spark.style.width;
-    container.appendChild(spark);
-  }
-}
-createSparks();
 
 // ── Toast ──
 function showToast(msg, type = "success") {
@@ -144,6 +119,7 @@ async function getUsers() {
 // ── Render ──
 function renderUsers() {
   let users = [...allUsers];
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
 
   const q = searchInput.value.trim().toLowerCase();
   if (q) {
@@ -159,11 +135,14 @@ function renderUsers() {
   userList.innerHTML = "";
 
   if (users.length === 0) {
+    const emptyIcon     = isDark ? "🦇" : "🕷️";
+    const emptyTitle    = q ? "NO TARGETS FOUND" : (isDark ? "NO TARGETS ON FILE" : "NO AGENTS YET");
+    const emptySubtitle = q ? "Try a different search" : (isDark ? "Begin surveillance operations" : "Deploy your first agent!");
     userList.innerHTML = `
       <div class="empty-state">
-        <div class="e-spider">🕷️</div>
-        <p>${q ? "NO AGENTS FOUND" : "NO AGENTS YET"}</p>
-        <span>${q ? "Try a different search" : "Deploy your first agent!"}</span>
+        <div class="e-spider" id="emptyIcon">${emptyIcon}</div>
+        <p>${emptyTitle}</p>
+        <span>${emptySubtitle}</span>
       </div>`;
     return;
   }
@@ -174,6 +153,9 @@ function renderUsers() {
     card.style.animationDelay = (idx * 0.05) + "s";
 
     const initial = user.name.charAt(0).toUpperCase();
+    const editIcon = isDark ? "✏️" : "✏️";
+    const delIcon  = isDark ? "🗑️" : "🗑️";
+
     card.innerHTML = `
       <div class="user-avatar">${initial}</div>
       <div class="user-info">
@@ -181,8 +163,8 @@ function renderUsers() {
         <div class="user-meta">ID: ${String(user.uid).padStart(4,"0")} &nbsp;·&nbsp; AGE: ${user.age} YRS</div>
       </div>
       <div class="user-actions">
-        <button class="btn-edit" onclick="startEdit(${user.uid})" title="Edit agent">✏️</button>
-        <button class="btn-del"  onclick="openDeleteModal(${user.uid})" title="Eliminate">🗑️</button>
+        <button class="btn-edit" onclick="startEdit(${user.uid})" title="Edit">${editIcon}</button>
+        <button class="btn-del"  onclick="openDeleteModal(${user.uid})" title="Delete">${delIcon}</button>
       </div>
     `;
     userList.appendChild(card);
@@ -208,6 +190,7 @@ userForm.addEventListener("submit", async (e) => {
   const uid  = document.getElementById("uid").value;
   const name = document.getElementById("name").value;
   const age  = document.getElementById("age").value;
+  const c    = tc();
 
   try {
     if (editingUid !== null) {
@@ -216,7 +199,7 @@ userForm.addEventListener("submit", async (e) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uid, name, age })
       });
-      showToast(`✅ Agent "${name.toUpperCase()}" updated!`);
+      showToast(c.toastUpdate ? c.toastUpdate(name.toUpperCase()) : `✅ "${name.toUpperCase()}" updated!`);
       stopEdit();
     } else {
       await fetch(apiUrl, {
@@ -224,7 +207,7 @@ userForm.addEventListener("submit", async (e) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uid, name, age })
       });
-      showToast(`🕸️ Agent "${name.toUpperCase()}" deployed!`);
+      showToast(c.toastDeploy ? c.toastDeploy(name.toUpperCase()) : `✅ "${name.toUpperCase()}" added!`);
     }
     userForm.reset();
     getUsers();
@@ -241,7 +224,10 @@ function startEdit(uid) {
   document.getElementById("uid").value  = user.uid;
   document.getElementById("name").value = user.name;
   document.getElementById("age").value  = user.age;
-  btnText.textContent = "💾 UPDATE AGENT";
+
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  btnText.textContent = isDark ? "UPDATE RECORD" : "UPDATE AGENT";
+  btnIcon.textContent = isDark ? "🦇" : "💾";
   cancelBtn.classList.remove("hidden");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -249,7 +235,9 @@ function startEdit(uid) {
 function stopEdit() {
   editingUid = null;
   userForm.reset();
-  btnText.textContent = "DEPLOY AGENT";
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  btnText.textContent = isDark ? "FILE TARGET" : "DEPLOY AGENT";
+  btnIcon.textContent = isDark ? "🦇" : "🕸️";
   cancelBtn.classList.add("hidden");
 }
 
@@ -268,14 +256,15 @@ cancelDelete.addEventListener("click", () => {
 
 confirmDelete.addEventListener("click", async () => {
   if (!deleteTargetUid) return;
+  const c = tc();
   try {
     await fetch(`${apiUrl}/${deleteTargetUid}`, { method: "DELETE" });
-    showToast("🕸️ Agent eliminated!", "error");
+    showToast(c.toastDelete || "Deleted!", "error");
     modalOverlay.classList.add("hidden");
     deleteTargetUid = null;
     getUsers();
   } catch {
-    showToast("Elimination failed ❌", "error");
+    showToast("Operation failed ❌", "error");
   }
 });
 
