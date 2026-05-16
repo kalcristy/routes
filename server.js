@@ -6,7 +6,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // ================= DB CONNECTION =================
-mongoose.connect("mongodb+srv://kalyankumarsampath_db_users:PibyZPIPd3Kl8Ur1@cluster0.uvzrc5s.mongodb.net/?appName=Cluster0")
+mongoose.connect("mongodb+srv://kalyankumarsampath_db_users:PibyZPIPd3Kl8Ur1@cluster0.uvzrc5s.mongodb.net/mydatabase?appName=Cluster0")
   .then(() => console.log("MongoooooDB Connected ✅"))
   .catch((err) => console.log(err));
 
