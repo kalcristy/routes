@@ -7,7 +7,7 @@ app.use(express.static("public"));
 
 // ================= DB CONNECTION =================
 mongoose.connect("mongodb+srv://kalyankumarsampath_db_users:PibyZPIPd3Kl8Ur1@cluster0.uvzrc5s.mongodb.net/?appName=Cluster0")
-  .then(() => console.log("MongoDB Connected ✅"))
+  .then(() => console.log("MongoooooDB Connected ✅"))
   .catch((err) => console.log(err));
 
 // ================= USER MODEL =================
