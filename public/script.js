@@ -1,290 +1,343 @@
-const apiUrl = "/api/users";
-
-// ── State ──
-let allUsers = [];
-let editingUid = null;
-let deleteTargetUid = null;
-let currentSort = "default";
-
-// ── Elements ──
-const userForm     = document.getElementById("userForm");
-const userList     = document.getElementById("userList");
-const searchInput  = document.getElementById("searchInput");
-const totalCount   = document.getElementById("totalCount");
-const submitBtn    = document.getElementById("submitBtn");
-const btnText      = document.getElementById("btnText");
-const cancelBtn    = document.getElementById("cancelBtn");
-const themeToggle  = document.getElementById("themeToggle");
-const themeIcon    = document.getElementById("themeIcon");
-const modalOverlay = document.getElementById("modalOverlay");
-const confirmDelete= document.getElementById("confirmDelete");
-const cancelDelete = document.getElementById("cancelDelete");
-const toast        = document.getElementById("toast");
-
-// ── Theme ──
-const savedTheme = localStorage.getItem("spidey-theme") || "dark";
-document.documentElement.setAttribute("data-theme", savedTheme);
-themeIcon.textContent = savedTheme === "dark" ? "☀️" : "🌙";
-
-themeToggle.addEventListener("click", () => {
-  const cur  = document.documentElement.getAttribute("data-theme");
-  const next = cur === "dark" ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", next);
-  localStorage.setItem("spidey-theme", next);
-  themeIcon.textContent = next === "dark" ? "☀️" : "🌙";
-});
-
-// ── Web Canvas ──
-const canvas = document.getElementById("webCanvas");
-const ctx    = canvas.getContext("2d");
-
-function resizeCanvas() {
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-function drawWeb() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-  const lineColor = isDark ? "rgba(227,28,28,0.35)" : "rgba(180,0,0,0.2)";
-  ctx.strokeStyle = lineColor;
-  ctx.lineWidth = 0.7;
-
-  // Draw multiple web origins
-  const origins = [
-    { x: 0, y: 0 },
-    { x: canvas.width, y: 0 },
-    { x: canvas.width / 2, y: -50 },
-  ];
-
-  origins.forEach(origin => {
-    const spokes = 16;
-    const maxR   = Math.max(canvas.width, canvas.height) * 1.2;
-    const rings  = 10;
-
-    // Spokes
-    for (let i = 0; i < spokes; i++) {
-      const angle = (i / spokes) * Math.PI * 2;
-      ctx.beginPath();
-      ctx.moveTo(origin.x, origin.y);
-      ctx.lineTo(
-        origin.x + Math.cos(angle) * maxR,
-        origin.y + Math.sin(angle) * maxR
-      );
-      ctx.stroke();
-    }
-
-    // Concentric rings
-    for (let r = 1; r <= rings; r++) {
-      const radius = (maxR / rings) * r;
-      ctx.beginPath();
-      for (let i = 0; i <= spokes; i++) {
-        const angle = (i / spokes) * Math.PI * 2;
-        const x = origin.x + Math.cos(angle) * radius;
-        const y = origin.y + Math.sin(angle) * radius;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      ctx.stroke();
-    }
-  });
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-drawWeb();
-window.addEventListener("resize", drawWeb);
-document.getElementById("themeToggle").addEventListener("click", () => setTimeout(drawWeb, 50));
+:root{
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --text:#111;
+  --sub:#666;
+  --primary:#5b5cff;
+  --shadow:0 10px 30px rgba(0,0,0,.08);
+}
 
-// ── Floating Sparks ──
-function createSparks() {
-  const container = document.getElementById("particles");
-  for (let i = 0; i < 20; i++) {
-    const spark = document.createElement("div");
-    spark.className = "spark";
-    spark.style.left     = Math.random() * 100 + "vw";
-    spark.style.top      = Math.random() * 100 + "vh";
-    spark.style.animationDuration  = (4 + Math.random() * 8) + "s";
-    spark.style.animationDelay     = (Math.random() * 8) + "s";
-    spark.style.width    = (2 + Math.random() * 3) + "px";
-    spark.style.height   = spark.style.width;
-    container.appendChild(spark);
+body{
+  font-family:"Montserrat",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  transition:.4s;
+  overflow-x:hidden;
+}
+
+.backgroundGlow{
+  position:fixed;
+  width:500px;
+  height:500px;
+  background:radial-gradient(circle,var(--primary),transparent 70%);
+  opacity:.15;
+  top:-200px;
+  right:-200px;
+  pointer-events:none;
+}
+
+.topbar{
+  width:95%;
+  margin:auto;
+  padding:25px 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-size:2rem;
+  font-weight:800;
+}
+
+.subtitle{
+  color:var(--sub);
+  margin-top:5px;
+}
+
+.themeBtn{
+  border:none;
+  background:var(--primary);
+  color:white;
+  padding:14px 24px;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:700;
+  transition:.3s;
+}
+
+.themeBtn:hover{
+  transform:translateY(-2px);
+}
+
+.hero{
+  width:95%;
+  margin:auto;
+  height:280px;
+  border-radius:30px;
+  overflow:hidden;
+  position:relative;
+
+  background:
+  linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.5)),
+  url('https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=1600&auto=format&fit=crop');
+
+  background-size:cover;
+  background-position:center;
+
+  box-shadow:var(--shadow);
+}
+
+.heroOverlay{
+  position:absolute;
+  inset:0;
+  backdrop-filter:blur(2px);
+}
+
+.heroContent{
+  position:relative;
+  z-index:2;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  text-align:center;
+}
+
+.heroContent h1{
+  font-size:3rem;
+  margin-bottom:15px;
+}
+
+.heroContent p{
+  font-size:1.1rem;
+}
+
+.mainGrid{
+  width:95%;
+  margin:40px auto;
+  display:grid;
+  grid-template-columns:1fr 1.3fr;
+  gap:25px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:24px;
+  padding:25px;
+  box-shadow:var(--shadow);
+  transition:.4s;
+}
+
+.cardHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.liveDot{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:#00ff73;
+  box-shadow:0 0 12px #00ff73;
+}
+
+.inputGroup{
+  margin-bottom:18px;
+}
+
+.inputGroup label{
+  display:block;
+  margin-bottom:8px;
+  font-weight:600;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:#eef2f7;
+  font-size:1rem;
+  outline:none;
+}
+
+.primaryBtn{
+  width:100%;
+  margin-top:15px;
+  border:none;
+  padding:16px;
+  border-radius:16px;
+  background:var(--primary);
+  color:white;
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.primaryBtn:hover{
+  transform:translateY(-3px);
+}
+
+.listTop{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  margin-bottom:25px;
+  align-items:center;
+}
+
+.searchBox{
+  width:240px;
+}
+
+#userList{
+  list-style:none;
+}
+
+.userItem{
+  background:#f2f5fb;
+  margin-bottom:14px;
+  padding:18px;
+  border-radius:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.userLeft{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.avatar{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  background:var(--primary);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:800;
+  font-size:1.2rem;
+}
+
+.userBtns{
+  display:flex;
+  gap:10px;
+}
+
+.editBtn{
+  background:#00b894;
+}
+
+.deleteBtn{
+  background:#ff3b5c;
+}
+
+.actionBtn{
+  border:none;
+  color:white;
+  padding:10px 16px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+#toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  background:#111;
+  color:white;
+  padding:14px 22px;
+  border-radius:14px;
+  opacity:0;
+  transition:.4s;
+}
+
+/* BATMAN MODE */
+
+body.dark{
+  --bg:#050505;
+  --card:#121212;
+  --text:#f5f5f5;
+  --sub:#aaaaaa;
+  --primary:#f5c518;
+  --shadow:0 0 30px rgba(245,197,24,.2);
+
+  background:
+  radial-gradient(circle at top,#1b1b1b,#050505 70%);
+}
+
+body.dark .hero{
+  background:
+  linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.85)),
+  url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=1600&auto=format&fit=crop');
+
+  background-size:cover;
+  background-position:center;
+}
+
+body.dark .heroContent h1{
+  color:#f5c518;
+  text-shadow:0 0 25px rgba(245,197,24,.7);
+}
+
+body.dark input{
+  background:#1d1d1d;
+  color:white;
+}
+
+body.dark .userItem{
+  background:#1a1a1a;
+  border:1px solid rgba(245,197,24,.15);
+}
+
+body.dark .avatar{
+  background:#f5c518;
+  color:black;
+}
+
+body.dark .themeBtn,
+body.dark .primaryBtn{
+  color:black;
+}
+
+body.dark .card{
+  border:1px solid rgba(245,197,24,.15);
+}
+
+body.dark .logo{
+  color:#f5c518;
+}
+
+body.dark .backgroundGlow{
+  background:
+  radial-gradient(circle,#f5c518,transparent 70%);
+}
+
+@media(max-width:900px){
+
+  .mainGrid{
+    grid-template-columns:1fr;
   }
-}
-createSparks();
 
-// ── Toast ──
-function showToast(msg, type = "success") {
-  toast.textContent = msg;
-  toast.className   = `toast ${type} show`;
-  setTimeout(() => { toast.className = "toast"; }, 3200);
-}
-
-// ── Easter Egg ──
-document.getElementById("name").addEventListener("input", function () {
-  if (this.value.trim().toLowerCase() === "vimal") {
-    showToast("j bhai is waiting for you 👀", "error");
-    this.value = "";
-  }
-});
-
-// ── Fetch Users ──
-async function getUsers() {
-  try {
-    const res = await fetch(apiUrl);
-    allUsers  = await res.json();
-    totalCount.textContent = String(allUsers.length).padStart(2, "0");
-    renderUsers();
-  } catch {
-    showToast("Failed to reach server ❌", "error");
-  }
-}
-
-// ── Render ──
-function renderUsers() {
-  let users = [...allUsers];
-
-  const q = searchInput.value.trim().toLowerCase();
-  if (q) {
-    users = users.filter(u =>
-      u.name.toLowerCase().includes(q) || String(u.uid).includes(q)
-    );
+  .listTop{
+    flex-direction:column;
+    align-items:flex-start;
   }
 
-  if (currentSort === "name") users.sort((a, b) => a.name.localeCompare(b.name));
-  else if (currentSort === "age") users.sort((a, b) => a.age - b.age);
-  else if (currentSort === "uid") users.sort((a, b) => a.uid - b.uid);
-
-  userList.innerHTML = "";
-
-  if (users.length === 0) {
-    userList.innerHTML = `
-      <div class="empty-state">
-        <div class="e-spider">🕷️</div>
-        <p>${q ? "NO AGENTS FOUND" : "NO AGENTS YET"}</p>
-        <span>${q ? "Try a different search" : "Deploy your first agent!"}</span>
-      </div>`;
-    return;
+  .searchBox{
+    width:100%;
   }
 
-  users.forEach((user, idx) => {
-    const card    = document.createElement("div");
-    card.className = "user-card";
-    card.style.animationDelay = (idx * 0.05) + "s";
-
-    const initial = user.name.charAt(0).toUpperCase();
-    card.innerHTML = `
-      <div class="user-avatar">${initial}</div>
-      <div class="user-info">
-        <div class="user-name">${user.name.toUpperCase()}</div>
-        <div class="user-meta">ID: ${String(user.uid).padStart(4,"0")} &nbsp;·&nbsp; AGE: ${user.age} YRS</div>
-      </div>
-      <div class="user-actions">
-        <button class="btn-edit" onclick="startEdit(${user.uid})" title="Edit agent">✏️</button>
-        <button class="btn-del"  onclick="openDeleteModal(${user.uid})" title="Eliminate">🗑️</button>
-      </div>
-    `;
-    userList.appendChild(card);
-  });
-}
-
-// ── Search ──
-searchInput.addEventListener("input", renderUsers);
-
-// ── Sort ──
-document.querySelectorAll(".pill").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".pill").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentSort = btn.dataset.sort;
-    renderUsers();
-  });
-});
-
-// ── Add / Update ──
-userForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const uid  = document.getElementById("uid").value;
-  const name = document.getElementById("name").value;
-  const age  = document.getElementById("age").value;
-
-  try {
-    if (editingUid !== null) {
-      await fetch(`${apiUrl}/${editingUid}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid, name, age })
-      });
-      showToast(`✅ Agent "${name.toUpperCase()}" updated!`);
-      stopEdit();
-    } else {
-      await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid, name, age })
-      });
-      showToast(`🕸️ Agent "${name.toUpperCase()}" deployed!`);
-    }
-    userForm.reset();
-    getUsers();
-  } catch {
-    showToast("Mission failed ❌", "error");
+  .heroContent h1{
+    font-size:2rem;
   }
-});
 
-// ── Edit ──
-function startEdit(uid) {
-  const user = allUsers.find(u => u.uid == uid);
-  if (!user) return;
-  editingUid = uid;
-  document.getElementById("uid").value  = user.uid;
-  document.getElementById("name").value = user.name;
-  document.getElementById("age").value  = user.age;
-  btnText.textContent = "💾 UPDATE AGENT";
-  cancelBtn.classList.remove("hidden");
-  window.scrollTo({ top: 0, behavior: "smooth" });
 }
-
-function stopEdit() {
-  editingUid = null;
-  userForm.reset();
-  btnText.textContent = "DEPLOY AGENT";
-  cancelBtn.classList.add("hidden");
-}
-
-cancelBtn.addEventListener("click", stopEdit);
-
-// ── Delete Modal ──
-function openDeleteModal(uid) {
-  deleteTargetUid = uid;
-  modalOverlay.classList.remove("hidden");
-}
-
-cancelDelete.addEventListener("click", () => {
-  modalOverlay.classList.add("hidden");
-  deleteTargetUid = null;
-});
-
-confirmDelete.addEventListener("click", async () => {
-  if (!deleteTargetUid) return;
-  try {
-    await fetch(`${apiUrl}/${deleteTargetUid}`, { method: "DELETE" });
-    showToast("🕸️ Agent eliminated!", "error");
-    modalOverlay.classList.add("hidden");
-    deleteTargetUid = null;
-    getUsers();
-  } catch {
-    showToast("Elimination failed ❌", "error");
-  }
-});
-
-modalOverlay.addEventListener("click", e => {
-  if (e.target === modalOverlay) {
-    modalOverlay.classList.add("hidden");
-    deleteTargetUid = null;
-  }
-});
-
-// ── Boot ──
-getUsers();
