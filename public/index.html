@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Spider-Man | Citizen Tracker</title>
+  <title>Citizen Tracker</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Cinzel:wght@700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
 </head>
 <body>
 
@@ -17,8 +17,10 @@
 
 <header class="header">
   <div class="header-left">
-    <div class="spidey-logo">
-      <svg viewBox="0 0 60 60" width="48" height="48">
+    <!-- Logo: swaps between Spider-Man and Batman -->
+    <div class="spidey-logo" id="heroLogo">
+      <!-- Spider-Man SVG (shown in light mode) -->
+      <svg id="spiderLogo" viewBox="0 0 60 60" width="48" height="48">
         <ellipse cx="30" cy="32" rx="10" ry="13" fill="#e31c1c"/>
         <ellipse cx="30" cy="21" rx="8" ry="9" fill="#e31c1c"/>
         <line x1="30" y1="12" x2="30" y2="45" stroke="#fff" stroke-width="0.7" opacity="0.4"/>
@@ -35,19 +37,40 @@
         <line x1="40" y1="30" x2="58" y2="29" stroke="#c0121a" stroke-width="2.2" stroke-linecap="round"/>
         <line x1="39" y1="36" x2="55" y2="44" stroke="#c0121a" stroke-width="2.2" stroke-linecap="round"/>
       </svg>
+      <!-- Batman SVG (shown in dark mode) -->
+      <svg id="batmanLogo" viewBox="0 0 60 60" width="48" height="48" style="display:none">
+        <!-- Bat body -->
+        <ellipse cx="30" cy="35" rx="8" ry="10" fill="#f5c518"/>
+        <!-- Bat ears -->
+        <polygon points="22,20 18,8 26,18" fill="#f5c518"/>
+        <polygon points="38,20 42,8 34,18" fill="#f5c518"/>
+        <!-- Bat wings -->
+        <path d="M22,28 Q10,18 2,22 Q8,30 14,32 Z" fill="#f5c518"/>
+        <path d="M38,28 Q50,18 58,22 Q52,30 46,32 Z" fill="#f5c518"/>
+        <!-- Wing detail -->
+        <path d="M22,28 Q10,18 2,22" fill="none" stroke="#c49a00" stroke-width="0.8"/>
+        <path d="M38,28 Q50,18 58,22" fill="none" stroke="#c49a00" stroke-width="0.8"/>
+        <!-- Eyes (white slits) -->
+        <ellipse cx="26" cy="28" rx="3" ry="2" fill="white" opacity="0.9"/>
+        <ellipse cx="34" cy="28" rx="3" ry="2" fill="white" opacity="0.9"/>
+        <!-- Mask lines -->
+        <path d="M23,25 Q26,22 30,24 Q34,22 37,25" fill="none" stroke="#c49a00" stroke-width="1"/>
+        <!-- Cape bottom -->
+        <path d="M20,42 Q15,52 10,55 Q22,50 30,52 Q38,50 50,55 Q45,52 40,42 Q35,46 30,44 Q25,46 20,42Z" fill="#f5c518"/>
+      </svg>
     </div>
     <div>
-      <div class="header-title">SPIDER-MAN</div>
-      <div class="header-sub">// CITIZEN TRACKER · NEW YORK CITY</div>
+      <div class="header-title" id="headerTitle">BATMAN</div>
+      <div class="header-sub" id="headerSub">// DARK KNIGHT DATABASE · GOTHAM CITY</div>
     </div>
   </div>
   <div class="header-right">
     <div class="hud-pill">
       <span class="hud-dot"></span>
-      <span id="totalCount">0</span> AGENTS ACTIVE
+      <span id="totalCount">00</span>&nbsp;<span id="hudLabel">TARGETS TRACKED</span>
     </div>
     <button class="theme-btn" id="themeToggle" title="Toggle theme">
-      <span id="themeIcon">☀️</span>
+      <span id="themeIcon">🕷️</span>
     </button>
   </div>
 </header>
@@ -63,9 +86,9 @@
     </svg>
   </div>
   <div class="hero-text">
-    <p class="hero-eyebrow">WITH GREAT POWER COMES GREAT RESPONSIBILITY</p>
-    <h1 class="hero-h1">CITIZEN <span>TRACKER</span></h1>
-    <p class="hero-tagline">Your friendly neighbourhood database — protecting New York, one record at a time</p>
+    <p class="hero-eyebrow" id="heroEyebrow">I AM THE NIGHT · I AM VENGEANCE · I AM BATMAN</p>
+    <h1 class="hero-h1" id="heroH1">DARK KNIGHT <span id="heroSpan">DATABASE</span></h1>
+    <p class="hero-tagline" id="heroTagline">// GOTHAM CITY INTEL SYSTEM · AUTHORIZED ACCESS ONLY</p>
   </div>
   <div class="hero-webs right-webs">
     <svg viewBox="0 0 180 200" width="180" height="200">
@@ -81,46 +104,46 @@
 <main class="main">
 
   <section class="panel form-panel">
-    <div class="panel-tag">INTEL INPUT</div>
-    <h2 class="panel-title">Register Agent</h2>
+    <div class="panel-tag" id="formTag">INTEL INPUT</div>
+    <h2 class="panel-title" id="formTitle">REGISTER AGENT</h2>
     <form id="userForm" autocomplete="off">
       <div class="field">
-        <label>AGENT ID</label>
+        <label id="labelUid">TARGET ID</label>
         <div class="input-wrap">
           <span class="pfx">#</span>
           <input type="number" id="uid" placeholder="e.g. 0042" required/>
         </div>
       </div>
       <div class="field">
-        <label>CODENAME</label>
+        <label id="labelName">ALIAS / CODENAME</label>
         <div class="input-wrap">
           <span class="pfx">@</span>
-          <input type="text" id="name" placeholder="e.g. Peter Parker" required/>
+          <input type="text" id="name" placeholder="e.g. Bruce Wayne" required/>
         </div>
       </div>
       <div class="field">
         <label>AGE</label>
         <div class="input-wrap">
           <span class="pfx">~</span>
-          <input type="number" id="age" placeholder="e.g. 21" required/>
+          <input type="number" id="age" placeholder="e.g. 35" required/>
         </div>
       </div>
       <button type="submit" class="btn-deploy" id="submitBtn">
-        🕸️ &nbsp;<span id="btnText">DEPLOY AGENT</span>
+        <span id="btnIcon">🦇</span>&nbsp;<span id="btnText">FILE TARGET</span>
       </button>
       <button type="button" class="btn-abort hidden" id="cancelBtn">✕ ABORT MISSION</button>
     </form>
-    <div class="form-spider">🕷️</div>
+    <div class="form-spider" id="formDeco">🦇</div>
   </section>
 
   <section class="panel list-panel">
-    <div class="panel-tag">FIELD ROSTER</div>
-    <h2 class="panel-title">Active Agents</h2>
+    <div class="panel-tag" id="rosterTag">GOTHAM DATABASE</div>
+    <h2 class="panel-title" id="rosterTitle">ACTIVE TARGETS</h2>
 
     <div class="controls-bar">
       <div class="search-wrap">
         <span>🔍</span>
-        <input type="text" id="searchInput" placeholder="Search agents by name or ID..."/>
+        <input type="text" id="searchInput" placeholder="Search targets by alias or ID..."/>
       </div>
       <div class="pills">
         <button class="pill active" data-sort="default">ALL</button>
@@ -132,9 +155,9 @@
 
     <div id="userList" class="user-list">
       <div class="empty-state">
-        <div class="e-spider">🕷️</div>
-        <p>No agents on the roster.</p>
-        <span>Deploy your first agent!</span>
+        <div class="e-spider" id="emptyIcon">🦇</div>
+        <p id="emptyTitle">NO TARGETS ON FILE</p>
+        <span id="emptySubtitle">Begin surveillance operations</span>
       </div>
     </div>
   </section>
@@ -143,16 +166,177 @@
 <div class="modal-overlay hidden" id="modalOverlay">
   <div class="modal">
     <div class="modal-top-web"></div>
-    <div class="modal-icon">🕷️</div>
-    <h3>ELIMINATE AGENT?</h3>
-    <p>This agent will be permanently removed from the roster. No going back.</p>
+    <div class="modal-icon" id="modalIcon">🦇</div>
+    <h3 id="modalTitle">ELIMINATE TARGET?</h3>
+    <p id="modalDesc">This target will be permanently purged from the database. Gotham never forgets, but this file will be destroyed.</p>
     <div class="modal-btns">
       <button class="modal-stand" id="cancelDelete">STAND DOWN</button>
-      <button class="modal-elim" id="confirmDelete">ELIMINATE 🕸️</button>
+      <button class="modal-elim" id="confirmDelete" id="confirmDelete">PURGE 🦇</button>
     </div>
   </div>
 </div>
 
 <script src="script.js"></script>
+<script>
+// ─────────────────────────────────────────────
+//  THEME CONTENT SWITCHER
+// ─────────────────────────────────────────────
+const themeContent = {
+  dark: {
+    headerTitle:    "BATMAN",
+    headerSub:      "// DARK KNIGHT DATABASE · GOTHAM CITY",
+    hudLabel:       "TARGETS TRACKED",
+    themeIcon:      "🕷️",
+    heroEyebrow:    "I AM THE NIGHT · I AM VENGEANCE · I AM BATMAN",
+    heroH1Before:   "DARK KNIGHT ",
+    heroSpan:       "DATABASE",
+    heroTagline:    "// GOTHAM CITY INTEL SYSTEM · AUTHORIZED ACCESS ONLY",
+    formTag:        "INTEL INPUT",
+    formTitle:      "REGISTER TARGET",
+    labelUid:       "TARGET ID",
+    labelName:      "ALIAS / CODENAME",
+    btnIcon:        "🦇",
+    btnText:        "FILE TARGET",
+    rosterTag:      "GOTHAM DATABASE",
+    rosterTitle:    "ACTIVE TARGETS",
+    searchPH:       "Search targets by alias or ID...",
+    formDeco:       "🦇",
+    emptyIcon:      "🦇",
+    emptyTitle:     "NO TARGETS ON FILE",
+    emptySubtitle:  "Begin surveillance operations",
+    modalIcon:      "🦇",
+    modalTitle:     "PURGE TARGET?",
+    modalDesc:      "This target will be permanently erased from Gotham's database. No going back, detective.",
+    confirmText:    "PURGE 🦇",
+    toastDeploy:    (n) => `🦇 Target "${n}" filed in database!`,
+    toastUpdate:    (n) => `✅ Target "${n}" record updated!`,
+    toastDelete:    "🦇 Target purged from database!",
+    cardBtnDeploy:  "FILE TARGET",
+    cardBtnUpdate:  "UPDATE RECORD",
+  },
+  light: {
+    headerTitle:    "SPIDER-MAN",
+    headerSub:      "// CITIZEN TRACKER · NEW YORK CITY",
+    hudLabel:       "AGENTS ACTIVE",
+    themeIcon:      "🌙",
+    heroEyebrow:    "WITH GREAT POWER COMES GREAT RESPONSIBILITY",
+    heroH1Before:   "CITIZEN ",
+    heroSpan:       "TRACKER",
+    heroTagline:    "Your friendly neighbourhood database — protecting New York, one record at a time",
+    formTag:        "INTEL INPUT",
+    formTitle:      "REGISTER AGENT",
+    labelUid:       "AGENT ID",
+    labelName:      "CODENAME",
+    btnIcon:        "🕸️",
+    btnText:        "DEPLOY AGENT",
+    rosterTag:      "FIELD ROSTER",
+    rosterTitle:    "ACTIVE AGENTS",
+    searchPH:       "Search agents by name or ID...",
+    formDeco:       "🕷️",
+    emptyIcon:      "🕷️",
+    emptyTitle:     "NO AGENTS YET",
+    emptySubtitle:  "Deploy your first agent!",
+    modalIcon:      "🕷️",
+    modalTitle:     "ELIMINATE AGENT?",
+    modalDesc:      "This agent will be permanently removed from the roster. No going back.",
+    confirmText:    "ELIMINATE 🕸️",
+    toastDeploy:    (n) => `🕸️ Agent "${n}" deployed!`,
+    toastUpdate:    (n) => `✅ Agent "${n}" updated!`,
+    toastDelete:    "🕸️ Agent eliminated!",
+    cardBtnDeploy:  "DEPLOY AGENT",
+    cardBtnUpdate:  "💾 UPDATE AGENT",
+  }
+};
+
+function applyThemeContent(theme) {
+  const c = themeContent[theme];
+
+  document.getElementById("headerTitle").textContent   = c.headerTitle;
+  document.getElementById("headerSub").textContent     = c.headerSub;
+  document.getElementById("hudLabel").textContent      = c.hudLabel;
+  document.getElementById("themeIcon").textContent     = c.themeIcon;
+  document.getElementById("heroEyebrow").textContent   = c.heroEyebrow;
+  document.getElementById("heroH1").childNodes[0].textContent = c.heroH1Before;
+  document.getElementById("heroSpan").textContent      = c.heroSpan;
+  document.getElementById("heroTagline").textContent   = c.heroTagline;
+  document.getElementById("formTag").textContent       = c.formTag;
+  document.getElementById("formTitle").textContent     = c.formTitle;
+  document.getElementById("labelUid").textContent      = c.labelUid;
+  document.getElementById("labelName").textContent     = c.labelName;
+  document.getElementById("btnIcon").textContent       = c.btnIcon;
+  document.getElementById("btnText").textContent       = c.btnText;
+  document.getElementById("rosterTag").textContent     = c.rosterTag;
+  document.getElementById("rosterTitle").textContent   = c.rosterTitle;
+  document.getElementById("searchInput").placeholder   = c.searchPH;
+  document.getElementById("formDeco").textContent      = c.formDeco;
+  document.getElementById("emptyIcon").textContent     = c.emptyIcon;
+  document.getElementById("emptyTitle").textContent    = c.emptyTitle;
+  document.getElementById("emptySubtitle").textContent = c.emptySubtitle;
+  document.getElementById("modalIcon").textContent     = c.modalIcon;
+  document.getElementById("modalTitle").textContent    = c.modalTitle;
+  document.getElementById("modalDesc").textContent     = c.modalDesc;
+  document.getElementById("confirmDelete").textContent = c.confirmText;
+
+  // Logo swap
+  document.getElementById("spiderLogo").style.display  = theme === "light" ? "block" : "none";
+  document.getElementById("batmanLogo").style.display  = theme === "dark"  ? "block" : "none";
+
+  // Rebuild particles for new theme
+  rebuildParticles(theme);
+
+  // Redraw canvas
+  setTimeout(drawWeb, 30);
+
+  // Store current content so script.js can reference it
+  window.__themeContent = c;
+}
+
+function rebuildParticles(theme) {
+  const container = document.getElementById("particles");
+  container.innerHTML = "";
+  if (theme === "dark") {
+    // Batman bats
+    for (let i = 0; i < 14; i++) {
+      const b = document.createElement("div");
+      b.className = "bat";
+      b.textContent = "🦇";
+      b.style.left   = (10 + Math.random() * 80) + "vw";
+      b.style.top    = (20 + Math.random() * 70) + "vh";
+      b.style.fontSize = (10 + Math.random() * 10) + "px";
+      b.style.animationDuration = (6 + Math.random() * 12) + "s";
+      b.style.animationDelay   = (Math.random() * 10) + "s";
+      container.appendChild(b);
+    }
+  } else {
+    // Spider-Man sparks
+    for (let i = 0; i < 20; i++) {
+      const s = document.createElement("div");
+      s.className = "spark";
+      s.style.left   = Math.random() * 100 + "vw";
+      s.style.top    = Math.random() * 100 + "vh";
+      s.style.animationDuration = (4 + Math.random() * 8) + "s";
+      s.style.animationDelay   = (Math.random() * 8) + "s";
+      s.style.width  = (2 + Math.random() * 3) + "px";
+      s.style.height = s.style.width;
+      container.appendChild(s);
+    }
+  }
+}
+
+// ── Init on load ──
+const savedTheme = localStorage.getItem("spidey-theme") || "dark";
+document.documentElement.setAttribute("data-theme", savedTheme);
+applyThemeContent(savedTheme);
+
+// ── Theme Toggle ──
+document.getElementById("themeToggle").addEventListener("click", () => {
+  const cur  = document.documentElement.getAttribute("data-theme");
+  const next = cur === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("spidey-theme", next);
+  applyThemeContent(next);
+  setTimeout(drawWeb, 50);
+});
+</script>
 </body>
 </html>
