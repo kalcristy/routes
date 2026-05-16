@@ -1,9 +1,9 @@
-const apiUrl = "http://localhost:5000/api/users";
+const apiUrl = "/api/users";
 
 const userForm = document.getElementById("userForm");
 const userList = document.getElementById("userList");
-// Name validation on input
 
+// Name validation on input
 document.getElementById("name").addEventListener("input", function () {
   if (this.value.trim().toLowerCase() === "akash") {
     alert("Tulasi is waiting for you");
@@ -19,7 +19,7 @@ async function getUsers() {
   userList.innerHTML = "";
 
   data.forEach(user => {
-  const li = document.createElement("li");
+    const li = document.createElement("li");
     li.innerHTML = `${user.uid} ${user.name} (${user.age})
       <button onclick="deleteUser('${user.uid}')">Delete</button>
     `;
@@ -39,7 +39,7 @@ userForm.addEventListener("submit", async (e) => {
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ uid,name,age })
+    body: JSON.stringify({ uid, name, age })
   });
 
   userForm.reset();
