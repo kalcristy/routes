@@ -1,120 +1,158 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kalyan's User Management</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <title>Spider-Man | Citizen Tracker</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
 </head>
 <body>
 
-  <!-- Toast -->
-  <div id="toast" class="toast"></div>
+<canvas id="webCanvas"></canvas>
+<div id="particles"></div>
+<div id="toast" class="toast"></div>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="header-left">
-      <div class="logo">KM</div>
-      <div>
-        <div class="header-title">User Management</div>
-        <div class="header-sub">Kalyan's Dashboard</div>
-      </div>
+<header class="header">
+  <div class="header-left">
+    <div class="spidey-logo">
+      <svg viewBox="0 0 60 60" width="48" height="48">
+        <ellipse cx="30" cy="32" rx="10" ry="13" fill="#e31c1c"/>
+        <ellipse cx="30" cy="21" rx="8" ry="9" fill="#e31c1c"/>
+        <line x1="30" y1="12" x2="30" y2="45" stroke="#fff" stroke-width="0.7" opacity="0.4"/>
+        <line x1="20" y1="21" x2="40" y2="21" stroke="#fff" stroke-width="0.7" opacity="0.4"/>
+        <line x1="21" y1="31" x2="39" y2="31" stroke="#fff" stroke-width="0.7" opacity="0.4"/>
+        <ellipse cx="25" cy="19" rx="5" ry="4" fill="white"/>
+        <ellipse cx="35" cy="19" rx="5" ry="4" fill="white"/>
+        <ellipse cx="25" cy="19" rx="3" ry="2.5" fill="#aad4f1"/>
+        <ellipse cx="35" cy="19" rx="3" ry="2.5" fill="#aad4f1"/>
+        <line x1="20" y1="25" x2="3" y2="16" stroke="#c0121a" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="20" y1="30" x2="2" y2="29" stroke="#c0121a" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="21" y1="36" x2="5" y2="44" stroke="#c0121a" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="40" y1="25" x2="57" y2="16" stroke="#c0121a" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="40" y1="30" x2="58" y2="29" stroke="#c0121a" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="39" y1="36" x2="55" y2="44" stroke="#c0121a" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
     </div>
-    <div class="header-right">
-      <div class="user-count-badge">
-        <span id="totalCount">0</span> Users
-      </div>
-      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
-        <span id="themeIcon">☀️</span>
-      </button>
-    </div>
-  </header>
-
-  <main class="main">
-
-    <!-- Left Panel: Form -->
-    <section class="panel form-panel">
-      <div class="panel-header">
-        <h2>Add New User</h2>
-        <p>Fill in the details below</p>
-      </div>
-
-      <form id="userForm" autocomplete="off">
-        <div class="field">
-          <label for="uid">User ID</label>
-          <div class="input-wrap">
-            <span class="input-icon">#</span>
-            <input type="number" id="uid" placeholder="e.g. 101" required />
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="name">Full Name</label>
-          <div class="input-wrap">
-            <span class="input-icon">@</span>
-            <input type="text" id="name" placeholder="e.g. Kalyan Kumar" required />
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="age">Age</label>
-          <div class="input-wrap">
-            <span class="input-icon">~</span>
-            <input type="number" id="age" placeholder="e.g. 21" required />
-          </div>
-        </div>
-
-        <button type="submit" class="btn-add" id="submitBtn">
-          <span id="btnText">+ Add User</span>
-        </button>
-        <button type="button" class="btn-cancel hidden" id="cancelBtn">✕ Cancel Edit</button>
-      </form>
-    </section>
-
-    <!-- Right Panel: User List -->
-    <section class="panel list-panel">
-      <div class="panel-header">
-        <h2>All Users</h2>
-        <div class="search-wrap">
-          <span>🔍</span>
-          <input type="text" id="searchInput" placeholder="Search by name or ID..." />
-        </div>
-      </div>
-
-      <div class="sort-bar">
-        <span>Sort by:</span>
-        <button class="sort-btn active" data-sort="default">Default</button>
-        <button class="sort-btn" data-sort="name">Name</button>
-        <button class="sort-btn" data-sort="age">Age</button>
-        <button class="sort-btn" data-sort="uid">ID</button>
-      </div>
-
-      <div id="userList" class="user-list">
-        <div class="empty-state">
-          <div class="empty-icon">👤</div>
-          <p>No users yet. Add one!</p>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Delete Confirm Modal -->
-  <div class="modal-overlay hidden" id="modalOverlay">
-    <div class="modal">
-      <div class="modal-icon">🗑️</div>
-      <h3>Delete User?</h3>
-      <p>This action cannot be undone.</p>
-      <div class="modal-actions">
-        <button class="btn-cancel-modal" id="cancelDelete">Cancel</button>
-        <button class="btn-confirm-delete" id="confirmDelete">Yes, Delete</button>
-      </div>
+    <div>
+      <div class="header-title">SPIDER-MAN</div>
+      <div class="header-sub">// CITIZEN TRACKER · NEW YORK CITY</div>
     </div>
   </div>
+  <div class="header-right">
+    <div class="hud-pill">
+      <span class="hud-dot"></span>
+      <span id="totalCount">0</span> AGENTS ACTIVE
+    </div>
+    <button class="theme-btn" id="themeToggle" title="Toggle theme">
+      <span id="themeIcon">☀️</span>
+    </button>
+  </div>
+</header>
 
-  <script src="script.js"></script>
+<div class="hero-strip">
+  <div class="hero-webs left-webs">
+    <svg viewBox="0 0 180 200" width="180" height="200">
+      <path d="M180,0 Q80,60 0,120" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M180,30 Q90,80 0,150" fill="none" stroke="currentColor" stroke-width="0.8"/>
+      <path d="M180,70 Q100,110 0,180" fill="none" stroke="currentColor" stroke-width="0.6"/>
+      <path d="M160,0 Q80,40 20,120" fill="none" stroke="currentColor" stroke-width="0.5"/>
+      <path d="M130,0 Q60,50 0,80" fill="none" stroke="currentColor" stroke-width="0.5"/>
+    </svg>
+  </div>
+  <div class="hero-text">
+    <p class="hero-eyebrow">WITH GREAT POWER COMES GREAT RESPONSIBILITY</p>
+    <h1 class="hero-h1">CITIZEN <span>TRACKER</span></h1>
+    <p class="hero-tagline">Your friendly neighbourhood database — protecting New York, one record at a time</p>
+  </div>
+  <div class="hero-webs right-webs">
+    <svg viewBox="0 0 180 200" width="180" height="200">
+      <path d="M0,0 Q100,60 180,120" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M0,30 Q90,80 180,150" fill="none" stroke="currentColor" stroke-width="0.8"/>
+      <path d="M0,70 Q80,110 180,180" fill="none" stroke="currentColor" stroke-width="0.6"/>
+      <path d="M20,0 Q100,40 160,120" fill="none" stroke="currentColor" stroke-width="0.5"/>
+      <path d="M50,0 Q120,50 180,80" fill="none" stroke="currentColor" stroke-width="0.5"/>
+    </svg>
+  </div>
+</div>
+
+<main class="main">
+
+  <section class="panel form-panel">
+    <div class="panel-tag">INTEL INPUT</div>
+    <h2 class="panel-title">Register Agent</h2>
+    <form id="userForm" autocomplete="off">
+      <div class="field">
+        <label>AGENT ID</label>
+        <div class="input-wrap">
+          <span class="pfx">#</span>
+          <input type="number" id="uid" placeholder="e.g. 0042" required/>
+        </div>
+      </div>
+      <div class="field">
+        <label>CODENAME</label>
+        <div class="input-wrap">
+          <span class="pfx">@</span>
+          <input type="text" id="name" placeholder="e.g. Peter Parker" required/>
+        </div>
+      </div>
+      <div class="field">
+        <label>AGE</label>
+        <div class="input-wrap">
+          <span class="pfx">~</span>
+          <input type="number" id="age" placeholder="e.g. 21" required/>
+        </div>
+      </div>
+      <button type="submit" class="btn-deploy" id="submitBtn">
+        🕸️ &nbsp;<span id="btnText">DEPLOY AGENT</span>
+      </button>
+      <button type="button" class="btn-abort hidden" id="cancelBtn">✕ ABORT MISSION</button>
+    </form>
+    <div class="form-spider">🕷️</div>
+  </section>
+
+  <section class="panel list-panel">
+    <div class="panel-tag">FIELD ROSTER</div>
+    <h2 class="panel-title">Active Agents</h2>
+
+    <div class="controls-bar">
+      <div class="search-wrap">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="Search agents by name or ID..."/>
+      </div>
+      <div class="pills">
+        <button class="pill active" data-sort="default">ALL</button>
+        <button class="pill" data-sort="name">NAME</button>
+        <button class="pill" data-sort="age">AGE</button>
+        <button class="pill" data-sort="uid">ID</button>
+      </div>
+    </div>
+
+    <div id="userList" class="user-list">
+      <div class="empty-state">
+        <div class="e-spider">🕷️</div>
+        <p>No agents on the roster.</p>
+        <span>Deploy your first agent!</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-top-web"></div>
+    <div class="modal-icon">🕷️</div>
+    <h3>ELIMINATE AGENT?</h3>
+    <p>This agent will be permanently removed from the roster. No going back.</p>
+    <div class="modal-btns">
+      <button class="modal-stand" id="cancelDelete">STAND DOWN</button>
+      <button class="modal-elim" id="confirmDelete">ELIMINATE 🕸️</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
